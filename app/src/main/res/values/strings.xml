@@ -1,4 +1,9 @@
 <resources>
-    <string name="app_name">Kidsmate1</string>
-    <string name="hello_world_test_txt">Hello, Kids! 2</string>
+    <string name="app_name">Kidsmate Project</string>
+    <string name="hello_world_test_txt">Hello, Kids!</string>
+    <string name="homework_success_gjy">고준영:작업환경 세팅 중</string>
+    <string name="homework_success_kjh">김준희:작업환경 세팅 중</string>
+    <string name="homework_success_bgs">박길성:작업환경 세팅 중</string>
+    <string name="homework_success_byw">배연웅:작업환경 세팅 완료</string>
+    <string name="homework_success_sdk">손동경:작업환경 세팅 중</string>
     </resources>
