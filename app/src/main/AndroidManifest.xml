@@ -15,6 +15,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SelectContents" />
+        <activity android:name=".TodayWord" />
+        <activity android:name=".Dictionary" />
+        <activity android:name=".Blank" />
+        <activity android:name=".Image" />
+        <activity android:name=".WordChain" />
     </application>
 
 </manifest>

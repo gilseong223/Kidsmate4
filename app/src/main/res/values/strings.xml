@@ -6,4 +6,7 @@
     <string name="homework_success_bgs">박길성:작업환경 세팅 중</string>
     <string name="homework_success_byw">배연웅:작업환경 세팅 완료</string>
     <string name="homework_success_sdk">손동경:작업환경 세팅 중</string>
+    <string name="imageMain">메인이미지</string>
+    <string name="mainStart">시작버튼</string>
+    <string name="mainOff">종료버튼</string>
 </resources>
