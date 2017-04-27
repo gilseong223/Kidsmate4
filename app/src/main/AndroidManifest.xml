@@ -21,6 +21,7 @@
         <activity android:name=".Blank" />
         <activity android:name=".Image" />
         <activity android:name=".WordChain" />
+        <activity android:name=".ResultDic" />
     </application>
 
 </manifest>
