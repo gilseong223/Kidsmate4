@@ -15,6 +15,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static com.example.ernest.kidsmate1.MainActivity.mDBHelper;
+
 /**
  * Created by User on 2017-04-27.
  */
@@ -22,7 +24,6 @@ import java.io.OutputStream;
 public class ResultDic extends AppCompatActivity {
     private TextView wordText;
     private TextView meanText;
-    private DatabaseHelper mDBHelper;
     private SQLiteDatabase db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +36,7 @@ public class ResultDic extends AppCompatActivity {
         String word = intent.getStringExtra("word");
         wordText.setText(word);
 
-        mDBHelper = new DatabaseHelper(this);
         String mean = null;
-
-        File database = new File(DatabaseHelper.DBLOCATION + DatabaseHelper.DBNAME);
-        if(false == database.exists()) {
-            try{mDBHelper.getReadableDatabase();}catch (Exception e){e.printStackTrace();}
-            //Copy db
-            if(copyDatabase(this)) {
-                Toast.makeText(this, "Copy database succes", Toast.LENGTH_SHORT).show();
-            }
-        }
 
         try{db = mDBHelper.openDatabase();}catch (Exception e){e.printStackTrace();}
         try {Cursor cursor = db.rawQuery("SELECT mean FROM dic WHERE word = '" + word + "' COLLATE NOCASE", null);
@@ -65,26 +56,6 @@ public class ResultDic extends AppCompatActivity {
         mDBHelper.close();
 
         meanText.setText(mean);
-    }
-
-    private boolean copyDatabase(Context context) {
-        try {
-            InputStream inputStream = context.getAssets().open(DatabaseHelper.DBNAME);
-            String outFileName = DatabaseHelper.DBLOCATION + DatabaseHelper.DBNAME;
-            OutputStream outputStream = new FileOutputStream(outFileName);
-            byte[] buff = new byte[1024];
-            int length = 0;
-            while ((length = inputStream.read(buff)) > 0) {
-                outputStream.write(buff, 0, length);
-            }
-            outputStream.flush();
-            outputStream.close();
-            Log.v("MainActivity", "DB copied");
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     @Override
