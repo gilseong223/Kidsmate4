@@ -9,4 +9,7 @@
     <string name="imageMain">메인이미지</string>
     <string name="mainStart">시작버튼</string>
     <string name="mainOff">종료버튼</string>
+    <string name="permission_message">This app needs to record audio and recognize your speech.</string>
+    <string name="str_start">Start</string>
+    <string name="str_stop">Stop</string>
 </resources>

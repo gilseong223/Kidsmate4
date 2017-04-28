@@ -48,7 +48,7 @@ public class ResultDic extends AppCompatActivity {
         }
 
         try{db = mDBHelper.openDatabase();}catch (Exception e){e.printStackTrace();}
-        try {Cursor cursor = db.rawQuery("SELECT mean FROM dic WHERE word = '" + word + "'", null);
+        try {Cursor cursor = db.rawQuery("SELECT mean FROM dic WHERE word = '" + word + "' COLLATE NOCASE", null);
             cursor.moveToFirst();
             if (!cursor.isAfterLast()) {
                 mean = cursor.getString(0);
