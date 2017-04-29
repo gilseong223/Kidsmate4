@@ -21,23 +21,10 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
 
-    public static DatabaseHelper mDBHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mDBHelper = new DatabaseHelper(this);       //DB를 관리하는 Helper 객체 생성
-
-        File database = new File(DatabaseHelper.DBLOCATION + DatabaseHelper.DBNAME);    //기기에서 DB파일 open
-        if(false == database.exists()) {                                                    //DB파일 존재여부 확인
-            try{mDBHelper.getReadableDatabase();}catch (Exception e){e.printStackTrace();}  //이건 뭔지 모르겠네요
-            //Copy db                                                                               //copy를 하고 해야될 것 같은데..
-            if(copyDatabase(this)) {                                                        //기기에 DB파일 없을 때 assets의 DB파일 복사
-                Toast.makeText(this, "Copy database succes", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override
@@ -84,25 +71,5 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
     public void onMessageDialogDismissed() {        //권한 없음 경고 dialog가 종료 될 때 권한 설정을 위한 팝업
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_RECORD_AUDIO_PERMISSION);
-    }
-
-    private boolean copyDatabase(Context context) {     //assets의 DB 파일을 기기에 복사하는 실제 코드
-        try {
-            InputStream inputStream = context.getAssets().open(DatabaseHelper.DBNAME);
-            String outFileName = DatabaseHelper.DBLOCATION + DatabaseHelper.DBNAME;
-            OutputStream outputStream = new FileOutputStream(outFileName);
-            byte[] buff = new byte[1024];
-            int length = 0;
-            while ((length = inputStream.read(buff)) > 0) {
-                outputStream.write(buff, 0, length);
-            }
-            outputStream.flush();
-            outputStream.close();
-            Log.v("MainActivity", "DB copied");
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 }
