@@ -45,12 +45,18 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
     }
 
     protected void mainStartClicked(View v) {
+        /*
+         * menu start
+         */
         Intent intent = new Intent(MainActivity.this, SelectContents.class);
         startActivity(intent);
         finish();
     }
 
     protected void mainOffClicked(View v) {
+        /*
+         * app exit
+         */
         finish();
         System.exit(0);
     }
@@ -75,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
     }
 
     private void showPermissionMessageDialog() {
+        /*
+         * show fragment message that permission is needed.
+         */
         MessageDialogFragment
                 .newInstance(getString(R.string.permission_message))
                 .show(getSupportFragmentManager(), FRAGMENT_MESSAGE_DIALOG);
