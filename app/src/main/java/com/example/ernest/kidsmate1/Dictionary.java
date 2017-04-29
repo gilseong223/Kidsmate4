@@ -30,7 +30,7 @@ public class Dictionary extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String CLIENT_ID = "4iZdE_YGdmxI9QVHDmDm";
     private NaverRecognizer naverRecognizer;
-    private RecognitionHandler handler;
+    private Dictionary.RecognitionHandler handler;
     private TextView txtResult;
     private AudioWriterPCM writer;
     private String mResult;
@@ -46,7 +46,7 @@ public class Dictionary extends AppCompatActivity {
         btnStart = (Button) findViewById(R.id.btn_start);
         imageButton = (ImageButton) findViewById(R.id.mic2);
 
-        handler = new RecognitionHandler(this);         //API용 handle
+        handler = new Dictionary.RecognitionHandler(this);         //API용 handle
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);    //API 객체
         imageButton.setOnClickListener(new View.OnClickListener() {
 
