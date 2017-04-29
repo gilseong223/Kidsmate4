@@ -46,13 +46,13 @@ public class Dictionary extends AppCompatActivity {
         btnStart = (Button) findViewById(R.id.btn_start);
         imageButton = (ImageButton) findViewById(R.id.mic2);
 
-        handler = new RecognitionHandler(this);
-        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        handler = new RecognitionHandler(this);         //API용 handle
+        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);    //API 객체
         imageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v) {
-                if(!naverRecognizer.getSpeechRecognizer().isRunning()) {
+            public void onClick(View v) {                               //마이크 버튼 눌렀을 때
+                if(!naverRecognizer.getSpeechRecognizer().isRunning()) {        //음성인식 시작, 여긴 샘플 코드 복사 한 것입니다
                     // Start button is pushed when SpeechRecognizer's state is inactive.
                     // Run SpeechRecongizer by calling recognize().
                     mResult = "";
@@ -69,26 +69,26 @@ public class Dictionary extends AppCompatActivity {
         });
     }
 
-    protected void searClicked(View v) {
+    protected void searClicked(View v) {                    //단어 입력 후 검색 버튼 -> 결과화면으로
         Intent intent = new Intent(Dictionary.this, ResultDic.class);
-        intent.putExtra("word", dicInput.getText().toString());
+        intent.putExtra("word", dicInput.getText().toString());     //입력한 단어를 결과 Activity로 넘겨줌
         startActivity(intent);
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed() {       //뒤로가기 눌렀을 때 현재 Activity 제거
         super.onBackPressed();
         finish();
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart() {          //Activity start 할때
         super.onStart();
-        naverRecognizer.getSpeechRecognizer().initialize();
+        naverRecognizer.getSpeechRecognizer().initialize(); //API 객체 초기화 * Main으로 옮길 예정
     }
 
-    static class RecognitionHandler extends Handler {
-        private final WeakReference<Dictionary> mActivity;
+    static class RecognitionHandler extends Handler {       //API용 핸들, 메시지를 받아와서 현재 Activity에 전달
+        private final WeakReference<Dictionary> mActivity;  //* Main으로 옮길 예정 or 클래스 분할
 
         RecognitionHandler(Dictionary activity) {
             mActivity = new WeakReference<Dictionary>(activity);
@@ -103,8 +103,8 @@ public class Dictionary extends AppCompatActivity {
         }
     }
 
-    private void handleMessage(Message msg) {
-        switch (msg.what) {
+    private void handleMessage(Message msg) {       //실제 API 메시지를 처리 하는 부분
+        switch (msg.what) {                         //샘플 코드 복사 한 것입니다
             case R.id.clientReady:
                 // Now an user can speak.
                 txtResult.setText("Connected");
@@ -136,8 +136,8 @@ public class Dictionary extends AppCompatActivity {
                 }
                 mResult = strBuf.toString();
                 txtResult.setText(mResult);
-                dicInput.setText(results.get(1));
-                break;
+                dicInput.setText(results.get(1));           //이부분은 샘플에서 수정 한 부분으로 결과 5개 중에서 1번째 값을
+                break;                                      //사용하여 사전 입력으로 사용하고 있는 것입니다
 
             case R.id.recognitionError:
                 if (writer != null) {
