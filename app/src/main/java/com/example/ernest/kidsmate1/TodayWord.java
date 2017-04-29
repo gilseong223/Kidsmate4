@@ -36,14 +36,10 @@ public class TodayWord extends AppCompatActivity {
     private String mResult;
     private TextView txtResult;
     private Button btnStart;
-    private AudioWriterPCM writer;
-    private String[] resultchk = new String[]{"", "", "", "", ""};
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String CLIENT_ID = "4iZdE_YGdmxI9QVHDmDm";
-    private NaverRecognizer naverRecognizer;
-    String[] todayWord;
+    private String[] todayWord;
     private TextView test;
-    private TodayWord.RecognitionHandler handler;
+    private MyHandler myHandler;
+    private String[] resultchk = new String[]{"","","","",""};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,44 +52,20 @@ public class TodayWord extends AppCompatActivity {
         btnStart = (Button) findViewById(R.id.button3);
         test = (TextView) findViewById(R.id.textView4);
 
-        handler = new TodayWord.RecognitionHandler(this);         //API용 handle
-        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);    //API 객체
-
+        myHandler = new MyHandler(this);
         todayWord = getWord();
         tw_word.setText(todayWord[0]);
         tw_mean.setText(todayWord[1]);
-        mic.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {                               //마이크 버튼 눌렀을 때
-                if(!naverRecognizer.getSpeechRecognizer().isRunning()) {        //음성인식 시작, 여긴 샘플 코드 복사 한 것입니다
-                    // Start button is pushed when SpeechRecognizer's state is inactive.
-                    // Run SpeechRecongizer by calling recognize().
-                    mResult = "";
-                    txtResult.setText("Connecting...");
-                    btnStart.setText(R.string.str_stop);
-                    naverRecognizer.recognize();
-                } else {
-                    Log.d(TAG, "stop and wait Final Result");
-                    btnStart.setEnabled(false);
-
-                    naverRecognizer.getSpeechRecognizer().stop();
-                }
-            }
-        });
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        naverRecognizer.getSpeechRecognizer().initialize();
     }
 
     protected void onClicked(View v) {
         String[] todayWord = getWord();
         tw_word.setText(todayWord[0]);
         tw_mean.setText(todayWord[1]);
+    }
+
+    protected void onStartClicked_TW(View v) {
+        Database.myRecognize(txtResult, btnStart, myHandler);
     }
 
     @Override
@@ -120,64 +92,17 @@ public class TodayWord extends AppCompatActivity {
         return todayWord;
     }
 
-    static class RecognitionHandler extends Handler {       //API용 핸들, 메시지를 받아와서 현재 Activity에 전달
-        private final WeakReference<TodayWord> mActivity;  //* Main으로 옮길 예정 or 클래스 분할
-
-        RecognitionHandler(TodayWord activity) {
-            mActivity = new WeakReference<TodayWord>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            TodayWord activity = mActivity.get();
-            if (activity != null) {
-                activity.handleMessage(msg);
-            }
-        }
-    }
-
-    private void handleMessage(Message msg) {       //실제 API 메시지를 처리 하는 부분
+    public void handleMessage(Message msg) {
         switch (msg.what) {                         //샘플 코드 복사 한 것입니다
-            case R.id.clientReady:
-                // Now an user can speak.
-                txtResult.setText("Connected");
-                writer = new AudioWriterPCM(
-                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                writer.open("Test");
-                break;
-
-            case R.id.audioRecording:
-                writer.write((short[]) msg.obj);
-                break;
-
-            case R.id.partialResult:
-                // Extract obj property typed with String.
-                mResult = (String) (msg.obj);
-                txtResult.setText(mResult);
-                break;
-
-            case R.id.finalResult:
-                // Extract obj property typed with String array.
-                // The first element is recognition result for speech.
-                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
-                List<String> results = speechRecognitionResult.getResults();
-                StringBuilder strBuf = new StringBuilder();
-                for(int i = 0; i< 5; i++) {
-                    if(results.get(i) != null)
-                        resultchk[i] = results.get(i);
-                }
-                for(String result : results) {
-                    strBuf.append(result);
-                    strBuf.append("\n");
-                }
-                mResult = strBuf.toString();
-                txtResult.setText(mResult);           //이부분은 샘플에서 수정 한 부분으로 결과 5개 중에서 1번째 값을
+            case R.id.endRecognize:
+                Log.v("dic", "endRecognize");
+                resultchk = Database.getResultCHK();
                 test.setText("");
                 int i = 0;
                 for (String result: resultchk) {
                     i++;
                     test.append("\"" + result + "\" - \"" + tw_word.getText() + "\"\n");
-                    if(result.equals(tw_word.getText())) {
+                    if(result.toLowerCase().equals(tw_word.getText().toString().toLowerCase())) {
                         test.append("잘했습니다");
                         todayWord = getWord();
                         tw_word.setText(todayWord[0]);
@@ -189,26 +114,6 @@ public class TodayWord extends AppCompatActivity {
                             test.append("다시 발음해 보세요");
                     }
                 }
-                break;                                      //사용하여 사전 입력으로 사용하고 있는 것입니다
-
-            case R.id.recognitionError:
-                if (writer != null) {
-                    writer.close();
-                }
-
-                mResult = "Error code : " + msg.obj.toString();
-                txtResult.setText(mResult);
-                btnStart.setText(R.string.str_start);
-                btnStart.setEnabled(true);
-                break;
-
-            case R.id.clientInactive:
-                if (writer != null) {
-                    writer.close();
-                }
-
-                btnStart.setText(R.string.str_start);
-                btnStart.setEnabled(true);
                 break;
         }
     }

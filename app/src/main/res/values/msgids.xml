@@ -12,4 +12,5 @@
     <item name="getAuthorization" type="id"/>
 
     <item name="endPointDetectTypeSelected" type="id"/>
+    <item name="endRecognize" type="id"/>
 </resources>

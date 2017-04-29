@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
     @Override
     protected void onStart() {              //Activity start 될 때
         super.onStart();
+        Database.naverRecognizerInitialize();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)      //녹음, 저장 권한 확인 후 설정
                 == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_RECORD_AUDIO_PERMISSION);
         }
+
     }
 
     private void showPermissionMessageDialog() {        //권한이 없을 때 dialog를 fragment로 띄우기 위해서 메시지 전달
