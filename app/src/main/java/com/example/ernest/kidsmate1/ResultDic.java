@@ -33,14 +33,14 @@ public class ResultDic extends AppCompatActivity {
         wordText = (TextView) findViewById(R.id.word);
         meanText = (TextView) findViewById(R.id.mean);
         Intent intent = getIntent();
-        String word = intent.getStringExtra("word");
+        String word = intent.getStringExtra("word");        //사전(Dictionary class)에서 전달한 단어를 받아오는 부분
         wordText.setText(word);
 
         String mean = null;
 
-        try{db = mDBHelper.openDatabase();}catch (Exception e){e.printStackTrace();}
+        try{db = mDBHelper.openDatabase();}catch (Exception e){e.printStackTrace();}        //dbhelper를 통한 실제 DB 오픈
         try {Cursor cursor = db.rawQuery("SELECT mean FROM dic WHERE word = '" + word + "' COLLATE NOCASE", null);
-            cursor.moveToFirst();
+            cursor.moveToFirst();                                           //db를 이용해서 질의하고 커서를 이용해서 활용 하는 부분
             if (!cursor.isAfterLast()) {
                 mean = cursor.getString(0);
             }
@@ -52,14 +52,14 @@ public class ResultDic extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        db.close();
+        db.close();                     //db와 helper를 모두 종료해줍니다
         mDBHelper.close();
 
-        meanText.setText(mean);
+        meanText.setText(mean);         //결과 출력
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed() {       //뒤로가기 버튼 누르면 현재 activity 제거
         super.onBackPressed();
         finish();
     }
