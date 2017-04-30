@@ -1,8 +1,11 @@
 package com.example.ernest.kidsmate1;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -16,8 +19,15 @@ public class Blank extends AppCompatActivity {
         setContentView(R.layout.blank);
     }
 
-    protected void micClicked(View v) {
-        Toast.makeText(getApplicationContext(), "음성 인식을 시작합니다", Toast.LENGTH_SHORT).show();
+    protected void onStartClicked(View v) {
+
+    }
+
+    protected void onTestClicked(View v) {
+        LinearLayout manager = (LinearLayout) findViewById(R.id.layout);
+        TextView textView = new TextView(this);
+        textView.setText("a");
+        manager.addView(textView);
     }
 
     @Override
