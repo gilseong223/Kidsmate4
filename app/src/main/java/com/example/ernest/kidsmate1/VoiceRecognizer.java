@@ -15,9 +15,6 @@ import com.naver.speech.clientapi.SpeechRecognitionListener;
 import com.naver.speech.clientapi.SpeechRecognitionResult;
 import com.naver.speech.clientapi.SpeechRecognizer;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
-
 class VoiceRecognizer {
     private static VoiceRecognizer mVoiceRecognizer = null; // this singleton
 

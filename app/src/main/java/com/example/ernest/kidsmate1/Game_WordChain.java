@@ -22,12 +22,11 @@ public class Game_WordChain extends AppCompatActivity {
 
     private String correctAnswer;
     private String correctAnsersMean;
-    private String[] allResult;
     private boolean isRightAnswer;
 
-    private TextView textView_today;
+    private TextView textView_word;
     private TextView textView_mean;
-    private TextView textView_candidate;
+    private TextView textView_debug;
 
     private Button button_start;
     private Button button_next;
@@ -55,9 +54,8 @@ public class Game_WordChain extends AppCompatActivity {
         correctAnswer = todayWord[0];
         correctAnsersMean = todayWord[1];
         isRightAnswer = false;
-        textView_today.setText(correctAnswer);
+        textView_word.setText(correctAnswer);
         textView_mean.setText(correctAnsersMean);
-        textView_candidate.setText("");
         return true;
     }
 
@@ -70,11 +68,12 @@ public class Game_WordChain extends AppCompatActivity {
                 break;
             case R.id.partialResult:
                 String partialResult = (String) msg.obj;
-                textView_candidate.append(partialResult+"\n");
+                textView_debug.append(partialResult+" ");
                 if(!isRightAnswer && partialResult.toLowerCase().equals(correctAnswer.toLowerCase())){
                     isRightAnswer = true;
-                    MessageDialogFragment.newInstance("정답입니다.");
+                    textView_debug.append("정답입니다.\n");
                 }
+                textView_debug.append("\n");
                 break;
             case R.id.endPointDetected:
                 break;
@@ -82,18 +81,18 @@ public class Game_WordChain extends AppCompatActivity {
                 List<String> results = ((SpeechRecognitionResult)(msg.obj)).getResults();
                 for (String result: results) {
                     if (isRightAnswer) break;
-                    textView_candidate.append(result+"\n");
+                    textView_debug.append(result+" ");
                     if(result.toLowerCase().equals(correctAnswer.toLowerCase())) {
                         isRightAnswer = true;
-                        MessageDialogFragment.newInstance("정답입니다.");
+                        textView_debug.append("정답입니다.\n");
                     }
                 }
+                textView_debug.append("\n");
                 if (isRightAnswer) {
                     makeQuiz();
                 }else{
-                    MessageDialogFragment.newInstance("다시 발음해 보세요");
+                    textView_debug.append("다시 발음 해 보세요.\n");
                 }
-                textView_candidate.setText("");
                 break;
             case R.id.recognitionError:
                 MessageDialogFragment.newInstance("Error code : " + msg.obj.toString());
@@ -112,21 +111,20 @@ public class Game_WordChain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game_wordchain);
+        mEventHandler = new EventHandler(this);
+
+        setContentView(R.layout.game_basic);
 
         mVoiceRecognizer = VoiceRecognizer.getInstance(this);
 
-        textView_today = (TextView) findViewById(R.id.textView_today);
+        textView_word = (TextView) findViewById(R.id.textView_word);
         textView_mean = (TextView) findViewById(R.id.textView_mean);
-        textView_candidate = (TextView) findViewById(R.id.textView_candidate);
+        textView_debug = (TextView) findViewById(R.id.textView_debug);
 
         button_next = (Button) findViewById(R.id.button_next);
         button_start = (Button) findViewById(R.id.button_start);
 
-        button_next.setText("다음문제");
         button_next.setEnabled(true);
-
-        button_start.setText("시작");
         button_start.setEnabled(true);
 
         button_next.setOnClickListener(new View.OnClickListener(){
@@ -140,7 +138,6 @@ public class Game_WordChain extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 if(!mVoiceRecognizer.isRunning()) {
-                    textView_candidate.setText("");
                     button_start.setText("연결중");
                     mVoiceRecognizer.recognize();
                 } else {
@@ -149,9 +146,6 @@ public class Game_WordChain extends AppCompatActivity {
                 }
             }
         });
-
-        textView_candidate.setText("");
-        mEventHandler = new EventHandler(this);
 
         makeQuiz();
     }

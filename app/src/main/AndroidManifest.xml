@@ -28,6 +28,7 @@
         <activity android:name=".Image" />
         <activity android:name=".WordChain" />
         <activity android:name=".ResultDic" />
+        <activity android:name=".Game_WordChain" />
     </application>
 
 </manifest>
