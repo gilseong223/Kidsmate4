@@ -41,7 +41,7 @@ public class SelectContents extends AppCompatActivity {
     }
 
     protected void wordChainClicked(View v) {
-        Intent intent = new Intent(SelectContents.this, WordChain.class);
+        Intent intent = new Intent(SelectContents.this, Game_WordChain.class);
         startActivity(intent);
     }
 
