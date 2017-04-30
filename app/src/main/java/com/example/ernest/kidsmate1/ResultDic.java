@@ -15,8 +15,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static com.example.ernest.kidsmate1.MainActivity.mDBHelper;
-
 /**
  * Created by User on 2017-04-27.
  */
@@ -24,7 +22,8 @@ import static com.example.ernest.kidsmate1.MainActivity.mDBHelper;
 public class ResultDic extends AppCompatActivity {
     private TextView wordText;
     private TextView meanText;
-    private SQLiteDatabase db;
+    private SQLiteDatabase DB;
+    private Cursor cursor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,22 +37,16 @@ public class ResultDic extends AppCompatActivity {
 
         String mean = null;
 
-        try{db = mDBHelper.openDatabase();}catch (Exception e){e.printStackTrace();}        //dbhelper를 통한 실제 DB 오픈
-        try {Cursor cursor = db.rawQuery("SELECT mean FROM dic WHERE word = '" + word + "' COLLATE NOCASE", null);
-            cursor.moveToFirst();                                           //db를 이용해서 질의하고 커서를 이용해서 활용 하는 부분
-            if (!cursor.isAfterLast()) {
-                mean = cursor.getString(0);
-            }
-            else {
-                mean = "결과가 없습니다.";
-            }
-            cursor.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        DB = Database.getDB();          //database 얻어옴
+        cursor = DB.rawQuery("SELECT mean FROM dic WHERE word = '" + word + "' COLLATE NOCASE", null);
+        cursor.moveToFirst();                                           //db를 이용해서 질의하고 커서를 이용해서 활용 하는 부분
+        if (!cursor.isAfterLast()) {
+            mean = cursor.getString(0);
         }
-
-        db.close();                     //db와 helper를 모두 종료해줍니다
-        mDBHelper.close();
+        else {
+            mean = "결과가 없습니다.";
+        }
+        cursor.close();
 
         meanText.setText(mean);         //결과 출력
     }

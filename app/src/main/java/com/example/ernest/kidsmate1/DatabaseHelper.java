@@ -9,13 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String DBLOCATION = "/data/data/com.example.ernest.kidsmate1/databases/";
-    public static final String DBNAME = "testDB.db";
     private Context mContext;
     private SQLiteDatabase mDatabase;
 
     public DatabaseHelper(Context context) {
-        super(context, DBLOCATION + DBNAME, null, 1);
+        super(context, Database.DBLOCATION + Database.DBNAME, null, 1);
         this.mContext = context;
     }
     @Override
@@ -29,7 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public SQLiteDatabase openDatabase() {
-        String dbPath = DBLOCATION + DBNAME;
+        String dbPath = Database.DBLOCATION + Database.DBNAME;
         if(mDatabase != null && mDatabase.isOpen()) {
             return null;
         }
