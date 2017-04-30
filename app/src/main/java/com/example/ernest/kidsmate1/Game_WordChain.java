@@ -16,10 +16,6 @@ import com.naver.speech.clientapi.SpeechRecognitionResult;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-/**
- * Created by User on 2017-04-15.
- */
-
 public class Game_WordChain extends AppCompatActivity {
     private VoiceRecognizer mVoiceRecognizer;
     private EventHandler mEventHandler;
@@ -75,7 +71,7 @@ public class Game_WordChain extends AppCompatActivity {
             case R.id.partialResult:
                 String partialResult = (String) msg.obj;
                 textView_candidate.append(partialResult+"\n");
-                if(isRightAnswer == false && partialResult.toLowerCase().equals(correctAnswer.toLowerCase())){
+                if(!isRightAnswer && partialResult.toLowerCase().equals(correctAnswer.toLowerCase())){
                     isRightAnswer = true;
                     MessageDialogFragment.newInstance("정답입니다.");
                 }
@@ -177,7 +173,7 @@ public class Game_WordChain extends AppCompatActivity {
         mVoiceRecognizer.release();
     }
 
-    protected static class EventHandler extends Handler {
+    public static class EventHandler extends Handler {
         private final WeakReference<Game_WordChain> mActivity;
         EventHandler(Game_WordChain activity) {
             mActivity = new WeakReference<>(activity);
