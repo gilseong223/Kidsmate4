@@ -26,7 +26,7 @@ class VoiceRecognizer {
 
     private static RecogListener mRecogListener; // inner class
 
-    private static AudioWriterPCM writer;
+    //private static AudioWriterPCM writer;
 
     private static final String TAG = VoiceRecognizer.class.getSimpleName();
     private static final String CLIENT_ID = "4iZdE_YGdmxI9QVHDmDm";
@@ -60,15 +60,7 @@ class VoiceRecognizer {
         return mVoiceRecognizer;
     }
 
-
-    public static void setHandler(Handler handler) {
-        /*
-        음성인식을 사용하는 액티비티의 핸들러를 저장하는 메소드. 싱글톤 클래스 보이스 레코그나이저에서 반환하는 메시지를 읽기 위해서는 반드시 액티비티의 핸들러를 넘겨야함.
-         */
-        mHandler = handler;
-    }
-
-    public static void recognize() {
+    public void recognize() {
         try {
             mRecognizer.recognize(new SpeechConfig(LanguageType.ENGLISH, EndPointDetectType.AUTO));
         } catch (SpeechRecognitionException e) {
@@ -76,25 +68,26 @@ class VoiceRecognizer {
         }
     }
 
-    public static void initialize(){
+    public void initialize(Handler handler){
         /*
         음성인식 전에 반드시 이 메소드를 실행시켜야 함.
          */
         mRecognizer.initialize();
+        mHandler = handler;
     }
 
-    public static void release(){
+    public void release(){
         /*
         음성인식 후에 반드시 이 메소드를 실행시켜야 함.
          */
         mRecognizer.release();
     }
 
-    public static boolean isRunning(){
+    public boolean isRunning(){
         return mRecognizer.isRunning();
     }
 
-    public static void stop(){
+    public void stop(){
         mRecognizer.stop();
     }
 
@@ -103,8 +96,8 @@ class VoiceRecognizer {
         @WorkerThread
         public void onReady() {
             Log.d(TAG, "Event occurred : Ready");
-            writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-            writer.open("Test");
+            //writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+            //writer.open("Test");
             Message msg = Message.obtain(mHandler, R.id.clientReady);
             msg.sendToTarget();
         }
@@ -112,7 +105,7 @@ class VoiceRecognizer {
         @Override
         @WorkerThread
         public void onRecord(short[] speech) {
-            writer.write(speech);
+            //writer.write(speech);
             Log.d(TAG, "Event occurred : Record");
             Message msg = Message.obtain(mHandler, R.id.audioRecording);
             msg.sendToTarget();
@@ -137,6 +130,10 @@ class VoiceRecognizer {
         @Override
         @WorkerThread
         public void onResult(SpeechRecognitionResult result) {
+            /*
+            5개의 스트링이 담긴 List<String>을 반환한다.
+            */
+            /*
             List<String> results = result.getResults();
             StringBuilder strBuf = new StringBuilder();
             for(String resultz : results) {
@@ -146,15 +143,19 @@ class VoiceRecognizer {
             String mResult = strBuf.toString();
             Log.d(TAG, "Final Result!! (" + result.getResults().get(0) + ")");
             Message msg = Message.obtain(mHandler, R.id.finalResult, mResult);
+            */
+            Message msg = Message.obtain(mHandler, R.id.finalResult, result);
             msg.sendToTarget();
         }
 
         @Override
         @WorkerThread
         public void onError(int errorCode) {
+            /*
             if (writer != null) {
                 writer.close();
             }
+            */
             Log.d(TAG, "Error!! (" + Integer.toString(errorCode) + ")");
             Message msg = Message.obtain(mHandler, R.id.recognitionError, errorCode);
             msg.sendToTarget();
@@ -171,9 +172,11 @@ class VoiceRecognizer {
         @Override
         @WorkerThread
         public void onInactive() {
+            /*
             if (writer != null) {
                 writer.close();
             }
+            */
             Log.d(TAG, "Event occurred : Inactive");
             Message msg = Message.obtain(mHandler, R.id.clientInactive);
             msg.sendToTarget();
