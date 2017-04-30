@@ -1,6 +1,7 @@
 package com.example.ernest.kidsmate1;
 
 import android.content.Context;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.WorkerThread;
@@ -15,6 +16,7 @@ import com.naver.speech.clientapi.SpeechRecognitionResult;
 import com.naver.speech.clientapi.SpeechRecognizer;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 class VoiceRecognizer {
     private static VoiceRecognizer mVoiceRecognizer = null; // singleton
@@ -58,24 +60,13 @@ class VoiceRecognizer {
         return mVoiceRecognizer;
     }
 
-    /*
+
     public static void setHandler(Handler handler) {
+        /*
+        음성인식을 사용하는 액티비티의 핸들러를 저장하는 메소드. 싱글톤 클래스 보이스 레코그나이저를 이용하기 위해서는 반드시 액티비티의 핸들러를 넘겨야함.
+         */
         mHandler = handler;
     }
-
-    public static Handler getHandler(){
-        return mHandler;
-    }
-
-    public static void setSpeechRecognizer (SpeechRecognizer speechRecognizer) {
-        mRecognizer = speechRecognizer;
-    }
-
-    public static SpeechRecognizer getSpeechRecognizer() {
-        return mRecognizer;
-    }
-
-    */
 
     public static void recognize() {
         try {
@@ -86,17 +77,22 @@ class VoiceRecognizer {
     }
 
     public static void initialize(){
+        /*
+        음성인식 전에 반드시 이 메소드를 실행시켜야 함.
+         */
         mRecognizer.initialize();
     }
 
     public static void release(){
+        /*
+        음성인식 후에 반드시 이 메소드를 실행시켜야 함.
+         */
         mRecognizer.release();
     }
 
     private void handleMessage(Message msg) {
         switch (msg.what) {
             case R.id.clientReady: // 음성인식 준비 가능
-                txtResult.setText("Connected");
                 writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
                 writer.open("Test");
                 break;
@@ -104,8 +100,8 @@ class VoiceRecognizer {
                 writer.write((short[]) msg.obj);
                 break;
             case R.id.partialResult:
-                mResult = (String) (msg.obj);
-                txtResult.setText(mResult);
+                //mResult = (String) (msg.obj);
+                //txtResult.setText(mResult);
                 break;
             case R.id.finalResult: // 최종 인식 결과
                 SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
@@ -115,38 +111,39 @@ class VoiceRecognizer {
                     strBuf.append(result);
                     strBuf.append("\n");
                 }
-                mResult = strBuf.toString();
-                txtResult.setText(mResult);
+                //mResult = strBuf.toString();
+                //txtResult.setText(mResult);
                 break;
             case R.id.recognitionError:
                 if (writer != null) {
                     writer.close();
                 }
-                mResult = "Error code : " + msg.obj.toString();
-                txtResult.setText(mResult);
-                btnStart.setText(R.string.str_start);
-                btnStart.setEnabled(true);
+                //mResult = "Error code : " + msg.obj.toString();
+                //txtResult.setText(mResult);
+                //btnStart.setText(R.string.str_start);
+                //btnStart.setEnabled(true);
                 break;
             case R.id.clientInactive:
                 if (writer != null) {
                     writer.close();
                 }
-                btnStart.setText(R.string.str_start);
-                btnStart.setEnabled(true);
+                //btnStart.setText(R.string.str_start);
+                //btnStart.setEnabled(true);
                 break;
         }
     }
 
     static class RecognitionHandler extends Handler {
-        private final WeakReference<MainActivity> mActivity;
-        RecognitionHandler(MainActivity activity) {
-            mActivity = new WeakReference<MainActivity>(activity);
+        private final WeakReference<VoiceRecognizer> mVoiceRecognizer;
+
+        RecognitionHandler(VoiceRecognizer recognizer) {
+            mVoiceRecognizer = new WeakReference<VoiceRecognizer>(recognizer);
         }
         @Override
         public void handleMessage(Message msg) {
-            MainActivity activity = mActivity.get();
-            if (activity != null) {
-                activity.handleMessage(msg);
+            VoiceRecognizer recognizer = mVoiceRecognizer.get();
+            if (recognizer != null) {
+                recognizer.handleMessage(msg);
             }
         }
     }
