@@ -33,7 +33,7 @@ public class WordChain extends AppCompatActivity {
     //  private AudioWriterPCM writer;
     private static final String CLIENT_ID = "123123123";
     private Cursor cursor;
-    private String mResult;
+   // private String mResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
