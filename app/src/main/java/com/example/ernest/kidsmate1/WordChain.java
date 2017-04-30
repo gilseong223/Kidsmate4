@@ -194,6 +194,7 @@ public class WordChain extends AppCompatActivity {
 
      }
      */
+
     public void decideWord() {
         DB = Database.getDB();
         cursor = DB.rawQuery("SELECT word FROM dic WHERE word = '" + texttest.getText().toString() + "' COLLATE NOCASE", null);
