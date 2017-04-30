@@ -24,16 +24,18 @@ import java.util.Random;
  */
 
 public class WordChain extends AppCompatActivity {
-    TextView first, second, third, texttest;
+    TextView first, second, third, texttest, dialog;
     Button buttontest;
     ImageButton mic;
+
     private SQLiteDatabase DB;
     // private RecognitionHandler handler;
     //  private NaverRecognizer naverRecognizer;
     //  private AudioWriterPCM writer;
     private static final String CLIENT_ID = "123123123";
     private Cursor cursor;
-   // private String mResult;
+    private String mResult;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class WordChain extends AppCompatActivity {
         texttest = (TextView) findViewById(R.id.Texttest);
         buttontest = (Button) findViewById(R.id.Buttontest);
         mic = (ImageButton) findViewById(R.id.mic5);
+        dialog = (TextView) findViewById(R.id.Dialog);
 
         firstWordShow();
 
@@ -63,6 +66,7 @@ public class WordChain extends AppCompatActivity {
             }
         }); */
     }
+
     /*
         private void handleMessage(Message msg) {
             switch(msg.what) {
@@ -151,7 +155,7 @@ public class WordChain extends AppCompatActivity {
         //String word2 = "apple";
 
         DB = Database.getDB();
-        cursor = DB.rawQuery("SELECT mean FROM dic WHERE word = '" + random.nextInt(100)+1 + "' COLLATE NOCASE", null);
+        cursor = DB.rawQuery("SELECT word FROM dic WHERE id = " + random.nextInt(100) + 1, null);
         cursor.moveToFirst();                                           //db를 이용해서 질의하고 커서를 이용해서 활용 하는 부분
         if (!cursor.isAfterLast()) {
             word = cursor.getString(0);
@@ -164,7 +168,7 @@ public class WordChain extends AppCompatActivity {
     public void findLastAlphabet() { // Second에 있는 단어의 마지막 알파벳을 찾고 Third에 표시한다.
         String temp;
         temp = second.getText().toString();
-        third.setText(temp.charAt(temp.length()-1) + "   ");
+        third.setText(temp.charAt(temp.length() - 1) + "   ");
     }
 
     public boolean isFirstAlphabet() {    // 사용자가 말한 단어의 첫 알파벳이 Second에 있는 단어의 마지막 알파벳과 같은지 확인
@@ -172,7 +176,7 @@ public class WordChain extends AppCompatActivity {
         temp1 = second.getText().toString();
         temp2 = texttest.getText().toString();
 
-        if (temp1.charAt(temp1.length()-1) == temp2.charAt(0) )
+        if (temp1.charAt(temp1.length() - 1) == temp2.charAt(0))
             return true; // TRUE
 
         return false; // FALSE
@@ -197,8 +201,11 @@ public class WordChain extends AppCompatActivity {
             third.setText(cursor.getString(0));
             showToThird();
             findLastAlphabet();
+            dialog.setText("잘했어!");
+        } else {
+            findLastAlphabet();
+            dialog.setText("다시 해봐");
         }
-        else findLastAlphabet();
         cursor.close();
     }
 
