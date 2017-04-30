@@ -19,10 +19,10 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 class VoiceRecognizer {
-    private static VoiceRecognizer mVoiceRecognizer = null; // singleton
+    private static VoiceRecognizer mVoiceRecognizer = null; // this singleton
 
-    private static Handler mHandler = null;
-    private static SpeechRecognizer mRecognizer;
+    private static Handler mHandler = null; // 이 클래스를 사용하는 액티비티의 핸들러. 이 핸들러를 통해 메시지를 보낸다.
+    private static SpeechRecognizer mRecognizer; // 음성인식 클라이언트. (API)
 
     private static RecogListener mRecogListener; // inner class
 
@@ -63,7 +63,7 @@ class VoiceRecognizer {
 
     public static void setHandler(Handler handler) {
         /*
-        음성인식을 사용하는 액티비티의 핸들러를 저장하는 메소드. 싱글톤 클래스 보이스 레코그나이저를 이용하기 위해서는 반드시 액티비티의 핸들러를 넘겨야함.
+        음성인식을 사용하는 액티비티의 핸들러를 저장하는 메소드. 싱글톤 클래스 보이스 레코그나이저에서 반환하는 메시지를 읽기 위해서는 반드시 액티비티의 핸들러를 넘겨야함.
          */
         mHandler = handler;
     }
@@ -90,77 +90,21 @@ class VoiceRecognizer {
         mRecognizer.release();
     }
 
-    private void handleMessage(Message msg) {
-        switch (msg.what) {
-            case R.id.clientReady: // 음성인식 준비 가능
-                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                writer.open("Test");
-                break;
-            case R.id.audioRecording:
-                writer.write((short[]) msg.obj);
-                break;
-            case R.id.partialResult:
-                //mResult = (String) (msg.obj);
-                //txtResult.setText(mResult);
-                break;
-            case R.id.finalResult: // 최종 인식 결과
-                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
-                List<String> results = speechRecognitionResult.getResults();
-                StringBuilder strBuf = new StringBuilder();
-                for(String result : results) {
-                    strBuf.append(result);
-                    strBuf.append("\n");
-                }
-                //mResult = strBuf.toString();
-                //txtResult.setText(mResult);
-                break;
-            case R.id.recognitionError:
-                if (writer != null) {
-                    writer.close();
-                }
-                //mResult = "Error code : " + msg.obj.toString();
-                //txtResult.setText(mResult);
-                //btnStart.setText(R.string.str_start);
-                //btnStart.setEnabled(true);
-                break;
-            case R.id.clientInactive:
-                if (writer != null) {
-                    writer.close();
-                }
-                //btnStart.setText(R.string.str_start);
-                //btnStart.setEnabled(true);
-                break;
-        }
+    public static boolean isRunning(){
+        return mRecognizer.isRunning();
     }
 
-    static class RecognitionHandler extends Handler {
-        private final WeakReference<VoiceRecognizer> mVoiceRecognizer;
-
-        RecognitionHandler(VoiceRecognizer recognizer) {
-            mVoiceRecognizer = new WeakReference<VoiceRecognizer>(recognizer);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            VoiceRecognizer recognizer = mVoiceRecognizer.get();
-            if (recognizer != null) {
-                recognizer.handleMessage(msg);
-            }
-        }
+    public static void stop(){
+        mRecognizer.stop();
     }
 
     static class RecogListener implements SpeechRecognitionListener {
         @Override
         @WorkerThread
-        public void onInactive() {
-            Log.d(TAG, "Event occurred : Inactive");
-            Message msg = Message.obtain(mHandler, R.id.clientInactive);
-            msg.sendToTarget();
-        }
-
-        @Override
-        @WorkerThread
         public void onReady() {
             Log.d(TAG, "Event occurred : Ready");
+            writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+            writer.open("Test");
             Message msg = Message.obtain(mHandler, R.id.clientReady);
             msg.sendToTarget();
         }
@@ -168,8 +112,9 @@ class VoiceRecognizer {
         @Override
         @WorkerThread
         public void onRecord(short[] speech) {
+            writer.write(speech);
             Log.d(TAG, "Event occurred : Record");
-            Message msg = Message.obtain(mHandler, R.id.audioRecording, speech);
+            Message msg = Message.obtain(mHandler, R.id.audioRecording);
             msg.sendToTarget();
         }
 
@@ -185,19 +130,31 @@ class VoiceRecognizer {
         @WorkerThread
         public void onEndPointDetected() {
             Log.d(TAG, "Event occurred : EndPointDetected");
+            Message msg = Message.obtain(mHandler, R.id.endPointDetected);
+            msg.sendToTarget();
         }
 
         @Override
         @WorkerThread
         public void onResult(SpeechRecognitionResult result) {
+            List<String> results = result.getResults();
+            StringBuilder strBuf = new StringBuilder();
+            for(String resultz : results) {
+                strBuf.append(resultz);
+                strBuf.append("\n");
+            }
+            String mResult = strBuf.toString();
             Log.d(TAG, "Final Result!! (" + result.getResults().get(0) + ")");
-            Message msg = Message.obtain(mHandler, R.id.finalResult, result);
+            Message msg = Message.obtain(mHandler, R.id.finalResult, mResult);
             msg.sendToTarget();
         }
 
         @Override
         @WorkerThread
         public void onError(int errorCode) {
+            if (writer != null) {
+                writer.close();
+            }
             Log.d(TAG, "Error!! (" + Integer.toString(errorCode) + ")");
             Message msg = Message.obtain(mHandler, R.id.recognitionError, errorCode);
             msg.sendToTarget();
@@ -208,6 +165,17 @@ class VoiceRecognizer {
         public void onEndPointDetectTypeSelected(EndPointDetectType epdType) {
             Log.d(TAG, "EndPointDetectType is selected!! (" + Integer.toString(epdType.toInteger()) + ")");
             Message msg = Message.obtain(mHandler, R.id.endPointDetectTypeSelected, epdType);
+            msg.sendToTarget();
+        }
+
+        @Override
+        @WorkerThread
+        public void onInactive() {
+            if (writer != null) {
+                writer.close();
+            }
+            Log.d(TAG, "Event occurred : Inactive");
+            Message msg = Message.obtain(mHandler, R.id.clientInactive);
             msg.sendToTarget();
         }
     }
