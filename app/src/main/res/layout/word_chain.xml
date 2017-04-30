@@ -7,17 +7,26 @@
     android:background="@drawable/screenwc"
     tools:context="com.example.ernest.kidsmate1.WordChain">
 
-    <ImageButton
-        android:id="@+id/mic5"
-        android:layout_width="53dp"
-        android:layout_height="73dp"
-        android:onClick="micClicked"
+    <ListView
+        android:id="@+id/listview_WC"
+        android:layout_width="160dp"
+        android:layout_height="349dp"
+        tools:layout_editor_absoluteX="112dp"
+        tools:layout_editor_absoluteY="122dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.928"
-        app:srcCompat="@drawable/mic" />
+        app:layout_constraintVertical_bias="0.897" />
 
 </android.support.constraint.ConstraintLayout>

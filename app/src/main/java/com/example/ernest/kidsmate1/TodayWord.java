@@ -30,9 +30,8 @@ import java.util.Random;
  */
 
 public class TodayWord extends AppCompatActivity {
-    TextView tw_word;
-    TextView tw_mean;
-    ImageButton mic;
+    private TextView tw_word;
+    private TextView tw_mean;
     private String mResult;
     private TextView txtResult;
     private Button btnStart;
@@ -47,7 +46,6 @@ public class TodayWord extends AppCompatActivity {
 
         tw_word = (TextView) findViewById(R.id.tw_word);
         tw_mean = (TextView) findViewById(R.id.tw_mean);
-        mic = (ImageButton) findViewById(R.id.mic1);
         txtResult = (TextView) findViewById(R.id.textView3);
         btnStart = (Button) findViewById(R.id.button3);
         test = (TextView) findViewById(R.id.textView4);
@@ -58,7 +56,7 @@ public class TodayWord extends AppCompatActivity {
         tw_mean.setText(todayWord[1]);
     }
 
-    protected void onClicked(View v) {
+    protected void onClicked_TW(View v) {
         String[] todayWord = getWord();
         tw_word.setText(todayWord[0]);
         tw_mean.setText(todayWord[1]);
