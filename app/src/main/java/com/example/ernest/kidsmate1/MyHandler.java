@@ -25,6 +25,8 @@ public class MyHandler extends Handler {
                 ((Dictionary)activity).handleMessage(msg);
             else if(activity instanceof TodayWord)
                 ((TodayWord)activity).handleMessage(msg);
+            else if(activity instanceof Image)
+                ((Image)activity).handleMessage(msg);
         }
     }
 }
